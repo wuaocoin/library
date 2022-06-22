@@ -295,13 +295,13 @@ class CoinClass
 		
 		if(Number(this.MapData['dateEnd']) <= now){
 			const objBuyerEth = await this.getBuyersETH();
-			if(Number(objBuyerEth.token_buyed)>0){
+			if(objBuyerEth !== undefined && Number(objBuyerEth.token_buyed)>0){
 				this.claimButton($('.btn-offering-eth')[0]);
 			}else{
 				this.endedButton($('.btn-offering-eth')[0]);
 			}
 			const objBuyerBnb = await this.getBuyersBNB();
-			if(Number(objBuyerBnb.token_buyed)>0){
+			if(objBuyerBnb !== undefined && Number(objBuyerBnb.token_buyed)>0){
 				this.claimButton($('.btn-offering-bnb')[0]);
 			}else{
 				this.endedButton($('.btn-offering-bnb')[0]);
