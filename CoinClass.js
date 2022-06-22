@@ -966,8 +966,3 @@ class CoinClass
 	}
 
 }
-		
-document.addEventListener("DOMContentLoaded", function(event) {
-	let ICoinClass = new CoinClass();
-	ICoinClass.initPage();
-});
