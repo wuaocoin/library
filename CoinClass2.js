@@ -920,7 +920,7 @@ class CoinClass
 	}
 
 	claimPartETH(part){
-0		const partC = this.getCoinValue('ETH','partClaim');
+		const partC = this.getCoinValue('ETH','partClaim');
 		if(partC!=undefined && partC.length>0){
 			if(partC[part]> 0){
 				this.claimETH(part);
