@@ -2,69 +2,149 @@ class CoinClass
 {
 	constructor() {
 		const mapData = {
-			'tokenETH' : '0x886ca534fc8F734EA3f874A3c59D61acC2870105',
-			'tokenBNB' : '0x315177E5Af3d357CA36382b78f745450B0966eC8',//change main
-			'proxiETH' : '0x97C3B5c801C6e0F8aaD64EA30e39E38D35919B56',
-			'proxiBNB' : '0xc07d478B2375d52d97A03257f95a6aBDd6121dbA',//change main
 			'raise': '1,000,000',
 			'limitGas' : '800000',
-			'urlETH': 'https://rinkeby.infura.io/v3/3e32bc5961d04023b1734a4e97fb263c',//change main
-			'urlBNB': 'https://data-seed-prebsc-1-s1.binance.org:8545',//change main
-			'chainIdETH': 4,
-			'chainIdBNB': 97,
 			'dateStart': '',
 			'dateEnd': '',
 			'offeringStatus': 0,
 			'language' : 'en',
 			'isMetaMaskInstalled': false,
-			'partClaimETH':[],
-			'partClaimBNB':[],
-			'timeClaimETH':[],
-			'timeClaimBNB':[],
-			'pending': 'Pending...',
-			'claimed': 'Claimed'
+			'tokenName': 'WUAO',
+			'coin': configCoins()			
 		};
+		mapData['dictionary'] = this.configLanguage(mapData['language']);
 		this.MapData = mapData;
 	}
 	
-	async initPage(){					
-		const accountETH = this.formatAddress(this.MapData['tokenETH']);
-		const accountBNB = this.formatAddress(this.MapData['tokenBNB']);
-		$('.accountEth').text(accountETH);
-		$('.accountBnb').text(accountBNB);
+	configLanguage(lan){
+		const dictionary = {};
+		switch(lan){
+			case "es": return this.getLaguageES();
+			default : return this.getLaguageEN();
+		}
+	}
+	
+	getLaguageES(){
+		return {
+			'buyNow': 'Comprar ahora',
+			'claim': 'Reclamar',
+			'claimQuarter': 'Reclamar (125 token)',
+			'claimed': 'Reclamado',
+			'connect': 'Conectar Metamask',
+			'connectWallet': 'Conectar Wallet',
+			'copied': 'Contrato Copiado',
+			'ended': 'Finalizado',
+			'failedCopy': 'Copia fallida',
+			'install': 'Instala MetaMask',
+			'network': 'Red',
+			'official': 'Contrato Oficial',
+			'pending': 'Pendiente...',
+			'pleaseConnect': 'Por favor conectar a MetaMask.',
+			'soon': 'Pronto',
+			'started': 'Inici&oacute;',
+			'success': '&Eacute;xito',
+			'shouldConnect': 'Puede conectarse a la red #COIN#.',
+			'wasClaimed': 'fue Reclamado antes...'
+		}
+	}
+	
+	getLaguageEN(){
+		return {
+			'buyNow': 'Buy now',
+			'claim': 'Claim',
+			'claimQuarter': 'Claim (125 token)',
+			'claimed': 'Claimed',
+			'connect': 'Connect Metamask',
+			'connectWallet': 'Connect Wallet',
+			'copied': 'Copied Contract',
+			'ended': 'Ended',
+			'failedCopy': 'Failed copy',
+			'install': 'Install MetaMask',
+			'network': 'Network',
+			'official': 'Official Contract',
+			'pending': 'Pending...',
+			'pleaseConnect': 'Please connect to MetaMask.',
+			'soon': 'Soon',
+			'started': 'Started',
+			'success': 'Success',
+			'shouldConnect': 'Should connect to #COIN# network.',
+			'wasClaimed': 'it was Claimed before...'
+		}
+	}
+	
+	configCoins(){
+		let coin = {};
 		
-		$('#btn-copy-eth-buy').click(this.copyToClickBoardEth.bind(this));
-		$('#btn-copy-eth-vesting').click(this.copyToClickBoardEth.bind(this));
-		$('#btn-copy-bnb-buy').click(this.copyToClickBoardBnB.bind(this));
-		$('#btn-copy-bnb-vesting').click(this.copyToClickBoardBnB.bind(this));
-		$('#btn-card-ETH').click(this.showMainCard.bind(this,'ETH'));
-		$('#btn-card-BNB').click(this.showMainCard.bind(this,'BNB'));
-		
-		await this.getOfferingavailableETH();
-		await this.getOfferingavailableBNB();
+		coin['ETH'] = {
+			'status': 0,
+			'token' : '0x886ca534fc8F734EA3f874A3c59D61acC2870105',
+			'proxi' : '0x97C3B5c801C6e0F8aaD64EA30e39E38D35919B56',
+			'url': 'https://rinkeby.infura.io/v3/3e32bc5961d04023b1734a4e97fb263c',
+			'chainId': 4,
+			'partClaim':[],
+			'timeClaim':[]
+		};
+		coin['BNB'] = {
+			'status': 1,
+			'token' : '0x315177E5Af3d357CA36382b78f745450B0966eC8',
+			'proxi' : '0xc07d478B2375d52d97A03257f95a6aBDd6121dbA',
+			'url': 'https://data-seed-prebsc-1-s1.binance.org:8545',
+			'chainId': 97,
+			'partClaim':[],
+			'timeClaim':[]
+		};
+	}
+	
+	setCoinValue(coin, key, value){
+		this.MapData['coin'][coin][key] = value;
+	}
+	
+	getCoinValue(coin, key){
+		return this.MapData['coin'][coin][key];
+	}
+	
+	getI18n(key){
+		return this.MapData['dictionary'][key];
+	}
+	
+	async initPage(){
+		const activeETH = this.getCoinValue('ETH','status');
+		if(activeETH){
+			const accountETH = this.formatAddress(this.getCoinValue('ETH','token'));
+			$('.accountEth').text(accountETH);
+			$('#btn-copy-eth-buy').click(this.copyToClickBoardEth.bind(this));
+			$('#btn-copy-eth-vesting').click(this.copyToClickBoardEth.bind(this));
+			$('#btn-card-ETH').click(this.showMainCard.bind(this,'ETH'));
+			await this.getOfferingavailableETH();
+			$('.btn-offering-eth').click(this.buyTokenEth.bind(this));
+			$('.btn-ves-eth-1').click(this.setClaimETH.bind(this,0));
+			$('.btn-ves-eth-2').click(this.setClaimETH.bind(this,1));
+			$('.btn-ves-eth-3').click(this.setClaimETH.bind(this,2));
+			$('.btn-ves-eth-4').click(this.setClaimETH.bind(this,3));
+		}
+		const activeBNB = this.getCoinValue('BNB','status');
+		if(activeBNB){
+			const accountBNB = this.formatAddress(this.getCoinValue('BNB','token'));
+			$('.accountBnb').text(accountBNB);
+			$('#btn-copy-bnb-buy').click(this.copyToClickBoardBnB.bind(this));
+			$('#btn-copy-bnb-vesting').click(this.copyToClickBoardBnB.bind(this));
+			$('#btn-card-BNB').click(this.showMainCard.bind(this,'BNB'));
+			await this.getOfferingavailableBNB();
+			$('.btn-offering-bnb').click(this.buyTokenBnb.bind(this));
+			$('.btn-ves-bnb-1').click(this.setClaimBNB.bind(this,0));
+			$('.btn-ves-bnb-2').click(this.setClaimBNB.bind(this,1));
+			$('.btn-ves-bnb-3').click(this.setClaimBNB.bind(this,2));
+			$('.btn-ves-bnb-4').click(this.setClaimBNB.bind(this,3));
+		}
 		await this.checkConnection();	
-		
-		$('.btn-offering-eth').click(this.buyTokenEth.bind(this));
-		$('.btn-offering-bnb').click(this.buyTokenBnb.bind(this));
-		
-		$('.btn-ves-eth-1').click(this.setClaimETH.bind(this,0));
-		$('.btn-ves-eth-2').click(this.setClaimETH.bind(this,1));
-		$('.btn-ves-eth-3').click(this.setClaimETH.bind(this,2));
-		$('.btn-ves-eth-4').click(this.setClaimETH.bind(this,3));
-
-		$('.btn-ves-bnb-1').click(this.setClaimBNB.bind(this,0));
-		$('.btn-ves-bnb-2').click(this.setClaimBNB.bind(this,1));
-		$('.btn-ves-bnb-3').click(this.setClaimBNB.bind(this,2));
-		$('.btn-ves-bnb-4').click(this.setClaimBNB.bind(this,3));
-
 		this.checkTime();			
 		let x = setInterval(this.checkTime.bind(this), 1000); 
 	}
 	
 	setClaimETH(index){
 		const networkId = $('body').data('networkId');
-		if(networkId !== this.MapData['chainIdETH']){
-			const msn = 'Should connect to ETH network.';
+		if(networkId !== this.getCoinValue('ETH','chainId')){
+			const msn = this.getI18n('shouldConnect').replace('#COIN#','ETH');
 			$.notify({ message: msn },{ type: 'danger'});
 		}else{
 			this.claimPartETH(index);
@@ -72,8 +152,8 @@ class CoinClass
 	}
 	setClaimBNB(index){
 		const networkId = $('body').data('networkId');
-		if(networkId !== this.MapData['chainIdBNB']){
-			const msn = 'Should connect to BNB network.';
+		if(networkId !== this.getCoinValue('BNB','chainId')){
+			const msn = this.getI18n('shouldConnect').replace('#COIN#','BNB');
 			$.notify({ message: msn },{ type: 'danger'});
 		}else{
 			this.claimPartBNB(index);
@@ -86,22 +166,22 @@ class CoinClass
 	};
 	
 	copyToClickBoardEth(){
-		this.copyToClickBoard('.cardETH', '.contractETH', this.MapData['tokenETH']);
+		this.copyToClickBoard('.cardETH', '.contractETH', this.getCoinValue('ETH','token'));
 	}
 	
 	copyToClickBoardBnB(){
-		this.copyToClickBoard('.cardBNB', '.contractBNB', this.MapData['tokenBNB']);
+		this.copyToClickBoard('.cardBNB', '.contractBNB', this.getCoinValue('BNB','token'));
 	}
 	
 	copyToClickBoard(card, label, content){
 		navigator.clipboard.writeText(content)
 		.then(() => {
-			$(label).html("Copied Contract");
+			$(label).html(this.getI18n('copied'));
 			$(card+" .card-footer").css("background-color", "#d1e7dd"); 
 			this.officialContrat(card, label);
 		})
 		.catch(err => {
-			$(label).html("Failed copy");
+			$(label).html(this.getI18n('failedCopy'));
 			$(card+" .card-footer").css("background-color", "#f8d7da"); 
 			this.officialContrat(card, label);
 		});
@@ -109,7 +189,7 @@ class CoinClass
 	
 	officialContrat(card, label){
 		setTimeout(function(){
-			$(label).html("Official Contract");
+			$(label).html(this.getI18n('official'));
 			$(card+" .card-footer").css("background-color", "rgba(0,0,0,.03)"); 
 		}, 2000);
 	}
@@ -128,12 +208,12 @@ class CoinClass
 		
 		$('.dateIni').html(timeStart);
 		
-		if($(".availableETH").text() === '0 COIN'){
+		if($(".availableETH").text() === '0 '+this.MapData['tokenName']){
 		   $('.timeETH').html('00h 00m 00s');
 		}else{
 		   $('.timeETH').html(timeEnd);
 		}
-		if($(".availableBNB").text() === '0 COIN'){
+		if($(".availableBNB").text() === '0 '+this.MapData['tokenName']){
 			$('.timeBNB').html('00h 00m 00s');
 		}else{
 			$('.timeBNB').html(timeEnd);
@@ -145,7 +225,7 @@ class CoinClass
 				
 	async getNetwork(){
 		let networkIcon = "wrong-icon.png";
-		let network = "Network";
+		let network = this.getI18n("network");
 		let networkId = 0;
 		let chainId = await ethereum.request({ method: 'eth_chainId' });
 		
@@ -166,7 +246,7 @@ class CoinClass
 	}
 	
 	async getOfferingavailable(provider, coin, btnClass){				
-		const proxiAddress = this.MapData['proxi'+coin];
+		const proxiAddress = this.getCoinValue(coin,'proxi');
 		
 		let	web3 = new Web3(provider);
 		const proxi = new web3.eth.Contract(VESTING.abi, proxiAddress);
@@ -174,7 +254,7 @@ class CoinClass
 		const obj = await proxi.methods.vista().call();					
 		const amountOffering = parseFloat(obj.holderAmount);
 		$('body').data("amountOffering"+coin, amountOffering);
-		$(".amountOffer"+coin).text("("+amountOffering+" COIN)");
+		$(".amountOffer"+coin).text("("+amountOffering+" "+this.MapData['tokenName']+")");
 		
 		const tokenValue = parseFloat(web3.utils.fromWei(obj.tValue));
 		const price = this.round(tokenValue*amountOffering,4); 
@@ -190,7 +270,7 @@ class CoinClass
 		this.MapData['dateStart'] = (obj.start*1000); 
 		this.MapData['dateEnd'] = (obj.end*1000);
 		
-		$(".available"+coin).text(rest+" COIN");
+		$(".available"+coin).text(rest+" "+this.MapData['tokenName']);
 		$(".t-value"+coin).text(price.toString());
 
 		const barra = (rest*100)/available;
@@ -209,7 +289,7 @@ class CoinClass
 			this.soonButton($('.btn-offering-eth')[0]);
 			this.soonButton($('.btn-offering-bnb')[0]);
 			this.MapData['offeringStatus'] = 0;
-			$('.lblStatus').html('Soon');
+			$('.lblStatus').html(this.getI18n("soon"));
 			flag = true;
 		}
 		
@@ -227,24 +307,24 @@ class CoinClass
 				this.endedButton($('.btn-offering-bnb')[0]);
 			}
 			this.MapData['offeringStatus'] = 2;		
-			$('.lblStatus').html('Ended');		
+			$('.lblStatus').html(this.getI18n('ended'));		
 			flag = true;					
 		}
 		if(!flag && this.MapData['offeringStatus'] !== 1){
 			this.MapData['offeringStatus'] = 1;
 			this.getOfferingStatus();
-			$('.lblStatus').html('Started');
+			$('.lblStatus').html(this.getI18n('started'));
 		}
 		return;
 	}
 	
 	async getOfferingavailableETH(){				
-		const provider = new Web3.providers.HttpProvider(this.MapData['urlETH']);
+		const provider = new Web3.providers.HttpProvider(this.getCoinValue('ETH','url'));
 		await this.getOfferingavailable(provider, "ETH", '.btn-offering-eth');
 	}
 	
 	async getOfferingavailableBNB(){
-		const provider = this.MapData['urlBNB'];
+		const provider = this.getCoinValue('BNB','url');
 		await this.getOfferingavailable(provider, "BNB", '.btn-offering-bnb');
 	}
 
@@ -252,7 +332,7 @@ class CoinClass
 		let	web3 = new Web3(provider);
 		let claimValue = '1';
 		
-		const proxiAddress = this.MapData['proxi'+coin];
+		const proxiAddress = this.getCoinValue(coin,'proxi');
 		const proxi = new web3.eth.Contract(VESTING.abi, proxiAddress);
 		const currentAccount = $('body').data('currentAccount');
 		if(currentAccount){
@@ -263,12 +343,12 @@ class CoinClass
 	}
 	
 	async getBalanceETH(){
-		const provider = new Web3.providers.HttpProvider(this.MapData['urlETH']);
+		const provider = new Web3.providers.HttpProvider(this.getCoinValue('ETH','url'));
 		await this.getBalance(provider, "ETH");
 	}
 	
 	async getBalanceBNB(){
-		const provider = this.MapData['urlBNB'];
+		const provider = this.getCoinValue('BNB','url');
 		await this.getBalance(provider, "BNB");
 	}
 	
@@ -290,11 +370,11 @@ class CoinClass
 	}
 	
 	updateAccount(accounts){
-		let formatted = "Connect Wallet";
+		let formatted = this.getI18n('connectWallet');
 		
 		let currentAccount = $('body').data('currentAccount');
 		if (accounts.length === 0) {
-			console.log('Please connect to MetaMask.');
+			console.log(this.getI18n('pleaseConnect'));
 			
 			$('body').removeData('currentAccount');
 			$('#btnConnectGlobal').addClass("pointer");
@@ -326,12 +406,12 @@ class CoinClass
 		if(!currentAccount){
 			this.loginWithMetaMask();
 		}else if(networkId != chainId){
-			const msn = 'Should connect to '+coin+' network.';
+			const msn = this.getI18n('shouldConnect').replace('#COIN#',coin);
 			$.notify({ message: msn },{ type: 'danger'});
 		}else if(Number(buyers.token_buyed)==0){
 			this.pendingButton($(btnClass)[0]);
 			try{
-				const proxiAddress = this.MapData['proxi'+coin];
+				const proxiAddress = this.getCoinValue(coin,'proxi');
 				let web3 =  new Web3(window.ethereum);
 				
 				const proxi = new web3.eth.Contract(VESTING.abi, proxiAddress);
@@ -360,7 +440,7 @@ class CoinClass
 						$('.forClaim'+coin).text('1');
 					}
 				}else{
-					console.log('Please connect to MetaMask.');
+					console.log(this.getI18n('pleaseConnect'));
 				}
 			}catch(e){
 				if(e.receipt && e.receipt.transactionHash){
@@ -384,7 +464,7 @@ class CoinClass
 	async showRevertMessage(proxi, data){
 		try{
 			await proxi.methods.buyerToken().call(data);
-			return { status: 1, message: 'Success'};
+			return { status: 1, message: this.getI18n('success')};
 		}catch(e){
 			const msg = e.message.split('\n')[0];
 			console.log(msg);
@@ -394,20 +474,20 @@ class CoinClass
 	}
 	
 	async buyTokenEth(){
-		const provider = new Web3.providers.HttpProvider(this.MapData['urlETH']);
+		const provider = new Web3.providers.HttpProvider(this.getCoinValue('ETH','url'));
 		const buyers = await this.getBuyersETH();
-		this.buyToken(provider, 'ETH', '.btn-offering-eth', this.MapData['chainIdETH'],buyers);
+		this.buyToken(provider, 'ETH', '.btn-offering-eth', this.getCoinValue('ETH','chainId'),buyers);
 	}
 	
 	async buyTokenBnb(){
-		const provider = this.MapData['urlBNB'];
+		const provider = this.getCoinValue('BNB','url');
 		const buyers = await this.getBuyersBNB();
-		this.buyToken(provider, 'BNB', '.btn-offering-bnb', this.MapData['chainIdBNB'],buyers);
+		this.buyToken(provider, 'BNB', '.btn-offering-bnb', this.getCoinValue('BNB','chainId'),buyers);
 	}
 	
 	disableButton(btn,text){
 		if(text === undefined){
-			text = "Ended";
+			text = this.getI18n('ended');
 		}
 		btn.classList.remove('btn-wuao');
 		btn.classList.add('btn-secondary');
@@ -418,14 +498,14 @@ class CoinClass
 	installButton(btn){
 		btn.classList.remove('btn-wuao');
 		btn.classList.add('btn-secondary');
-		btn.innerHTML = "Install MetaMask";
+		btn.innerHTML = this.getI18n('install');
 		btn.disabled = true;
 	}
 	
 	soonButton(btn){
 		btn.classList.remove('btn-wuao');
 		btn.classList.add('btn-secondary');
-		btn.innerHTML = "Soon"
+		btn.innerHTML = this.getI18n('soon');
 		btn.disabled = true;
 	}
 
@@ -438,42 +518,42 @@ class CoinClass
 	pendingButton(btn){
 		btn.classList.remove('btn-wuao');
 		btn.classList.add('btn-secondary');
-		btn.innerHTML = this.MapData['pending']
+		btn.innerHTML = this.getI18n('pending');
 		btn.disabled = true;
 	}
 	
 	claimedButton(btn){
 		btn.classList.remove('btn-wuao');
 		btn.classList.add('btn-secondary');
-		btn.innerHTML = this.MapData['claimed']
+		btn.innerHTML = this.getI18n('claimed');
 		btn.disabled = true;
 	}
 
 	claimButton(btn){
 		btn.classList.add('btn-wuao');
 		btn.classList.remove('btn-secondary');
-		btn.innerHTML = "Claim"
+		btn.innerHTML = this.getI18n('claim');
 		btn.disabled = false;
 	}
 
 	claimQuaterButton(btn){
 		btn.classList.add('btn-wuao');
 		btn.classList.remove('btn-secondary');
-		btn.innerHTML = "Claim (250 token)"
+		btn.innerHTML = this.getI18n('claimQuarter');
 		btn.disabled = false;
 	}
 	
 	enableButton(btn){
 		btn.classList.add('btn-wuao');
 		btn.classList.remove('btn-secondary');
-		btn.innerHTML = "Buy now";
+		btn.innerHTML = this.getI18n('buyNow');
 		btn.disabled = false;
 	}	
 	
 	connectButton(btn){
 		btn.classList.remove('btn-wuao');
 		btn.classList.add('btn-secondary');
-		btn.innerHTML = "Connect Metamask";
+		btn.innerHTML = this.getI18n('connect');
 		btn.disabled = false;
 	}
 	
@@ -487,71 +567,40 @@ class CoinClass
 			const btnOfferingBNB = $('.btn-offering-bnb')[0];
 			this.installButton(btnOfferingETH);
 			this.installButton(btnOfferingBNB);
-			$('.viewAccount').text("Install Metamask");
+			$('.viewAccount').text(this.getI18n('install'));
 			$('.forClaim').html('1');
 		}
 		this.MapData['isMetaMaskInstalled'] = flag;
 	}
 
 	async getProxiETH(){
-		const provider = new Web3.providers.HttpProvider(this.MapData['urlETH']);
-		const proxiAddress = this.MapData['proxiETH'];
+		const provider = new Web3.providers.HttpProvider(this.getCoinValue('ETH','url'));
+		const proxiAddress = this.getCoinValue('ETH','proxi');
 		let	web3 = new Web3(provider);
 		const proxi = new web3.eth.Contract(VESTING.abi, proxiAddress);
 		return proxi;
 	}
 
+	async getProxiBNB(){
+		const provider = this.getCoinValue('BNB','url');
+		const proxiAddress = this.getCoinValue('BNB','proxi');
+		let	web3 = new Web3(provider);
+		const proxi = new web3.eth.Contract(VESTING.abi, proxiAddress);
+		return proxi;
+	}
+	
 	async getProxiMetamaskETH(){
 		let web3 =  new Web3(window.ethereum);
-		const proxiAddress = this.MapData['proxiETH'];
+		const proxiAddress = this.getCoinValue('ETH','proxi');
 		const proxi = new web3.eth.Contract(VESTING.abi, proxiAddress);
 		return proxi;
 	}
 
 	async getProxiMetamaskBNB(){
 		let web3 =  new Web3(window.ethereum);
-		const proxiAddress = this.MapData['proxiBNB'];
+		const proxiAddress = this.getCoinValue('BNB','proxi');
 		const proxi = new web3.eth.Contract(VESTING.abi, proxiAddress);
 		return proxi;
-	}
-	
-
-	async getProxiBNB(){
-		const provider = this.MapData['urlBNB'];
-		const proxiAddress = this.MapData['proxiBNB'];
-		let	web3 = new Web3(provider);
-		const proxi = new web3.eth.Contract(VESTING.abi, proxiAddress);
-		return proxi;
-	}
-
-	async getBuyersETH(){
-		const currentAccount = $('body').data('currentAccount');
-		if(currentAccount){
-			const proxi = await this.getProxiETH();
-			const buyer = await proxi.methods.buyers(currentAccount).call();
-			if(buyer.token_buyed>0 ){
-				if(this.MapData['timeClaimETH'].length==0){
-					this.MapData['timeClaimETH'] = await this.getTimeClaimETH();
-					this.MapData['timeClaimETH'] = this.MapData['timeClaimETH'].map((val)=>{return val*1000});
-				}
-				this.MapData['partClaimETH'] = await this.getPartClaimETH();
-				console.log(this.MapData['partClaimETH']);
-			}
-			return buyer;
-		}else{
-			return;
-		}
-	}
-
-	async getTimeClaimETH(){
-		const currentAccount = $('body').data('currentAccount');
-		if(currentAccount){
-			const proxi = await this.getProxiETH();
-			const times = await proxi.methods.getTimeForClaim(currentAccount).call();
-			return times;
-		}else{
-			return;
-		}
 	}
 
 	async claimETH(part){
@@ -565,7 +614,6 @@ class CoinClass
 			}catch(err){
 				this.claimQuaterButton($('.btn-ves-eth-'+(parseInt(part)+1))[0]);//call new state
 			}
-			//this.pendingButton($('.btn-ves-eth-'+(parseInt(part)+1))[0]);
 		}
 	}
 
@@ -583,28 +631,21 @@ class CoinClass
 		}
 	}
 
-	async getPartClaimETH(){
-		const currentAccount = $('body').data('currentAccount');
-		if(currentAccount){
-			const proxi = await this.getProxiETH();
-			const part = await proxi.methods.getPart(currentAccount).call();
-			return part;
-		}else{
-			return;
-		}
-	}
-
 	async getBuyersBNB(){
 		const currentAccount = $('body').data('currentAccount');
 		if(currentAccount){
 			const proxi = await this.getProxiBNB();
 			const buyer = await proxi.methods.buyers(currentAccount).call();
-			if(buyer.token_buyed>0 && this.MapData['timeClaimBNB'].length==0){
-				this.MapData['timeClaimBNB'] = await this.getTimeClaimBNB();
-				console.log(this.MapData['timeClaimBNB']);
-				this.MapData['timeClaimBNB'] = this.MapData['timeClaimBNB'].map((val)=>{return val*1000});
+			if(buyer.token_buyed > 0){
+				let timeClaim = this.getCoinValue('BNB','timeClaim');
+				if(timeClaim.length==0){
+					timeClaim = await this.getTimeClaimBNB();
+					timeClaim = timeClaim.map((val)=>{return val*1000});
+					this.setCoinValue('BNB', 'timeClaim', timeClaim);
+				}			
+				let partClaim = await this.getPartClaimBNB();
+				this.setCoinValue('BNB', 'partClaim', partClaim);
 			}
-			this.MapData['partClaimBNB'] = await this.getPartClaimBNB();
 			return buyer;
 		}else{
 			return;
@@ -617,18 +658,21 @@ class CoinClass
 			const proxi = await this.getProxiETH();
 			const buyer = await proxi.methods.buyers(currentAccount).call();
 			if(buyer.token_buyed>0 ){
-				if(this.MapData['timeClaimETH'].length==0){
-					this.MapData['timeClaimETH'] = await this.getTimeClaimETH();
-					this.MapData['timeClaimETH'] = this.MapData['timeClaimETH'].map((val)=>{return val*1000});
+				let timeClaim = this.getCoinValue('ETH','timeClaim');
+				if(timeClaim.length==0){
+					timeClaim = await this.getTimeClaimETH();
+					timeClaim = timeClaim.map((val)=>{return val*1000});
+					this.setCoinValue('ETH', 'timeClaim', timeClaim);
 				}
-				this.MapData['partClaimETH'] = await this.getPartClaimETH();
+				let partClaim = await this.getPartClaimETH(); 
+				this.setCoinValue('ETH', 'partClaim', partClaim);
 			}
 			return buyer;
 		}else{
 			return;
 		}
 	}
-
+	
 	async getTimeClaimBNB(){
 		const currentAccount = $('body').data('currentAccount');
 		if(currentAccount){
@@ -640,6 +684,17 @@ class CoinClass
 		}
 	}
 
+	async getTimeClaimETH(){
+		const currentAccount = $('body').data('currentAccount');
+		if(currentAccount){
+			const proxi = await this.getProxiETH();
+			const times = await proxi.methods.getTimeForClaim(currentAccount).call();
+			return times;
+		}else{
+			return;
+		}
+	}
+	
 	async getPartClaimBNB(){
 		const currentAccount = $('body').data('currentAccount');
 		if(currentAccount){
@@ -651,6 +706,17 @@ class CoinClass
 		}
 	}
 
+	async getPartClaimETH(){
+		const currentAccount = $('body').data('currentAccount');
+		if(currentAccount){
+			const proxi = await this.getProxiETH();
+			const part = await proxi.methods.getPart(currentAccount).call();
+			return part;
+		}else{
+			return;
+		}
+	}
+	
 	async getOfferingStatus(){
 		const btnOfferingETH = $('.btn-offering-eth')[0];
 		const btnOfferingBNB = $('.btn-offering-bnb')[0];
@@ -680,7 +746,7 @@ class CoinClass
 		}else if(this.MapData['offeringStatus'] !== 1){
 			$(maxMint).text('0');
 			return;
-		}else if($(availableToken).text() === '0 COIN'){
+		}else if($(availableToken).text() === '0 '+this.MapData['tokenName']){
 			$(maxMint).text('0');
 			this.disableButton(btnOffering);
 		}else{
@@ -721,10 +787,12 @@ class CoinClass
 	}
 
 	async managementVestingETH(){
-		const timeC = this.MapData['timeClaimETH'];
-		this.MapData['partClaimETH'] = await this.getPartClaimETH();
-		const partC = this.MapData['partClaimETH'];
-
+		const timeC = this.getCoinValue('ETH','timeClaim');
+		const partC = await this.getPartClaimETH();
+		const pending = this.getI18n('pending');
+		const claimed = this.getI18n('claimed');
+		
+		this.setCoinValue('ETH', 'partClaim', partClaim);
 		this.setTimerStartClaim(timeC,'eth');
 		const obj = this.getdistancePart(timeC);
 		if(obj.distPart1 < 1){
@@ -732,7 +800,7 @@ class CoinClass
 			if(Number(partC[0])==0){
 				this.claimedButton(btn);
 			}else{
-				if(btn.innerText!=this.MapData['pending']&&btn.innerText!=this.MapData['claimed']){
+				if(btn.innerText !== pending && btn.innerText !== claimed){
 					btn.classList.add('btn-wuao');
 					btn.classList.remove('btn-secondary');
 					btn.disabled = false;
@@ -744,7 +812,7 @@ class CoinClass
 			if(Number(partC[1])==0){
 				this.claimedButton(btn);
 			}else{
-				if(btn.innerText!=this.MapData['pending']&&btn.innerText!=this.MapData['claimed']){
+				if(btn.innerText !== pending && btn.innerText !== claimed){
 					btn.classList.add('btn-wuao');
 					btn.classList.remove('btn-secondary');
 					btn.disabled = false;
@@ -756,7 +824,7 @@ class CoinClass
 			if(Number(partC[2])==0){
 				this.claimedButton(btn);
 			}else{
-				if(btn.innerText!=this.MapData['pending']&&btn.innerText!=this.MapData['claimed']){
+				if(btn.innerText !== pending && btn.innerText !== claimed){
 					btn.classList.add('btn-wuao');
 					btn.classList.remove('btn-secondary');
 					btn.disabled = false;
@@ -768,7 +836,7 @@ class CoinClass
 			if(Number(partC[3])==0){
 				this.claimedButton(btn);
 			}else{
-				if(btn.innerText!=this.MapData['pending']&&btn.innerText!=this.MapData['claimed']){
+				if(btn.innerText !== pending && btn.innerText !== claimed){
 					btn.classList.add('btn-wuao');
 					btn.classList.remove('btn-secondary');
 					btn.disabled = false;
@@ -778,9 +846,12 @@ class CoinClass
 	}
 
 	async managementVestingBNB(){
-		const timeC = this.MapData['timeClaimBNB'];
-		this.MapData['partClaimBNB'] = await this.getPartClaimBNB();
-		const partC = this.MapData['partClaimBNB'];
+		const timeC = this.getCoinValue('BNB','timeClaim');
+		const partC = await this.getPartClaimBNB();
+		const pending = this.getI18n('pending');
+		const claimed = this.getI18n('claimed');
+		
+		this.setCoinValue('BNB', 'partClaim', partClaim);
 		this.setTimerStartClaim(timeC,'bnb');
 		const obj = this.getdistancePart(timeC);
 		if(obj.distPart1 < 1){
@@ -788,7 +859,7 @@ class CoinClass
 			if(Number(partC[0])==0){
 				this.claimedButton(btn);
 			}else{
-				if(btn.innerText!=this.MapData['pending']&&btn.innerText!=this.MapData['claimed']){
+				if(btn.innerText !== pending && btn.innerText !== claimed){
 					btn.classList.add('btn-wuao');
 					btn.classList.remove('btn-secondary');
 					btn.disabled = false;
@@ -800,7 +871,7 @@ class CoinClass
 			if(Number(partC[1])==0){
 				this.claimedButton(btn);
 			}else{
-				if(btn.innerText!=this.MapData['pending']&&btn.innerText!=this.MapData['claimed']){
+				if(btn.innerText !== pending && btn.innerText !== claimed){
 					btn.classList.add('btn-wuao');
 					btn.classList.remove('btn-secondary');
 					btn.disabled = false;
@@ -812,7 +883,7 @@ class CoinClass
 			if(Number(partC[2])==0){
 				this.claimedButton(btn);
 			}else{
-				if(btn.innerText!=this.MapData['pending']&&btn.innerText!=this.MapData['claimed']){
+				if(btn.innerText !== pending && btn.innerText !== claimed){
 					btn.classList.add('btn-wuao');
 					btn.classList.remove('btn-secondary');
 					btn.disabled = false;
@@ -824,7 +895,7 @@ class CoinClass
 			if(Number(partC[3])==0){
 				this.claimedButton(btn);
 			}else{
-				if(btn.innerText!=this.MapData['pending']&&btn.innerText!=this.MapData['claimed']){
+				if(btn.innerText !== pending && btn.innerText !== claimed){
 					btn.classList.add('btn-wuao');
 					btn.classList.remove('btn-secondary');
 					btn.disabled = false;
@@ -849,23 +920,23 @@ class CoinClass
 	}
 
 	claimPartETH(part){
-		const partC = this.MapData['partClaimETH'];
+0		const partC = this.getCoinValue('ETH','partClaim');
 		if(partC!=undefined && partC.length>0){
 			if(partC[part]> 0){
 				this.claimETH(part);
 			}else{
-				$.notify({ message: 'it was Claimed before...'},{ type: 'danger'});
+				$.notify({ message: this.getI18n('wasClaimed') },{ type: 'danger'});
 			}				
 		}
 	}
 
 	claimPartBNB(part){
-		const partC = this.MapData['partClaimBNB'];
+		const partC = this.getCoinValue('BNB','partClaim');
 		if(partC!=undefined && partC.length>0){
 			if(partC[part]> 0){
 				this.claimBNB(part);
 			}else{
-				$.notify({ message: 'it was Claimed before...'},{ type: 'danger'});
+				$.notify({ message: this.getI18n('wasClaimed') },{ type: 'danger'});
 			}				
 		}
 	}
