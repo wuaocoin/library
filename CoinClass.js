@@ -3,13 +3,13 @@ class CoinClass
 	constructor() {
 		const mapData = {
 			'tokenETH' : '0x886ca534fc8F734EA3f874A3c59D61acC2870105',
-			'tokenBNB' : '0x315177E5Af3d357CA36382b78f745450B0966eC8',
+			'tokenBNB' : '0x315177E5Af3d357CA36382b78f745450B0966eC8',//change main
 			'proxiETH' : '0x97C3B5c801C6e0F8aaD64EA30e39E38D35919B56',
-			'proxiBNB' : '0xc07d478B2375d52d97A03257f95a6aBDd6121dbA',
+			'proxiBNB' : '0xc07d478B2375d52d97A03257f95a6aBDd6121dbA',//change main
 			'raise': '1,000,000',
 			'limitGas' : '800000',
-			'urlETH': 'https://rinkeby.infura.io/v3/3e32bc5961d04023b1734a4e97fb263c',
-			'urlBNB': 'https://data-seed-prebsc-1-s1.binance.org:8545',
+			'urlETH': 'https://rinkeby.infura.io/v3/3e32bc5961d04023b1734a4e97fb263c',//change main
+			'urlBNB': 'https://data-seed-prebsc-1-s1.binance.org:8545',//change main
 			'chainIdETH': 4,
 			'chainIdBNB': 97,
 			'dateStart': '',
